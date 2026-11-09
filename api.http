@@ -1,0 +1,86 @@
+# Requisições de teste (extensão "REST Client" do VS Code).
+# 1) Rode "npm run db:seed" para criar o admin.  2) Execute o login e copie o token para as variáveis abaixo.
+
+@baseUrl = http://localhost:3000/api
+@adminToken = COLE_AQUI_O_TOKEN_DO_ADMIN
+@userToken = COLE_AQUI_O_TOKEN_DO_USUARIO
+@eventId = COLE_AQUI_O_ID_DO_EVENTO
+@registrationId = COLE_AQUI_O_ID_DA_INSCRICAO
+
+### Cadastrar usuário
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "João Aluno",
+  "email": "joao@ifma.edu.br",
+  "password": "senha_segura_123"
+}
+
+### Login do usuário (devolve { user, token })
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "joao@ifma.edu.br",
+  "password": "senha_segura_123"
+}
+
+### Login do administrador
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@eventos.com",
+  "password": "admin123"
+}
+
+### Listar eventos
+GET {{baseUrl}}/events
+
+### Consultar um evento
+GET {{baseUrl}}/events/{{eventId}}
+
+### Criar evento (somente admin)
+POST {{baseUrl}}/events
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "title": "Apresentação do Projeto Mobile",
+  "description": "Apresentação da nossa plataforma de eventos em Next.js e React Native.",
+  "date": "2026-11-09",
+  "time": "14:00",
+  "location": "IFMA Campus Timon",
+  "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
+}
+
+### Atualizar evento (somente admin)
+PUT {{baseUrl}}/events/{{eventId}}
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "title": "Apresentação do Projeto Mobile (atualizado)",
+  "description": "Descrição atualizada do evento.",
+  "date": "2026-11-09",
+  "time": "15:00",
+  "location": "IFMA Campus Timon",
+  "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800"
+}
+
+### Excluir evento (somente admin)
+DELETE {{baseUrl}}/events/{{eventId}}
+Authorization: Bearer {{adminToken}}
+
+### Inscrever o usuário no evento
+POST {{baseUrl}}/events/{{eventId}}/registrations
+Authorization: Bearer {{userToken}}
+
+### Listar as inscrições do usuário
+GET {{baseUrl}}/registrations
+Authorization: Bearer {{userToken}}
+
+### Cancelar inscrição
+DELETE {{baseUrl}}/registrations/{{registrationId}}
+Authorization: Bearer {{userToken}}

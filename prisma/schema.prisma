@@ -1,0 +1,46 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  isAdmin       Boolean        @default(false)
+  registrations Registration[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Event {
+  id            String         @id @default(uuid())
+  title         String
+  description   String
+  date          DateTime
+  time          String         // formato "HH:mm"
+  location      String
+  image         String         // URL da imagem
+  registrations Registration[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  // Impede o mesmo usuário de se inscrever duas vezes no mesmo evento
+  @@unique([userId, eventId])
+  @@index([eventId])
+}
